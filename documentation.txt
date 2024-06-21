@@ -8,3 +8,97 @@ Section 1. Introduction
 03. A Note On The Project Structure
 04. What is Next.js ?
 05. Environment Setup
+
+
+Section 2. Next.js Fundamentals & Project Start
+
+06. New Project & Folder Structure
+
+07. Layout, Homepage & Metadata
+-u folderu app kreiramo komponentu layout.jsx
+-u komponenti layout.jsx kreiramo funkciju MainLayout()
+-funkciji MainLayout() dodajemo parametar destruktuirani prop children
+-kreiramo komponentu page.jsx
+-kreiramo folder assets
+-u folderu assets kreiramo folder styles i globals.css fajl
+-u komponentu layout.jsx importujemo globals.css fajl
+-kreiramo i eksportujemo varijablu const metadata
+
+08. File-Based Routing
+-kreiramo folder properties i komponentu page.jsx 
+-u folderu properties kreiramo folder add i komponentu page.jsx
+-u folderu properties kreiramo folder [id] i komponentu page.jsx
+-u komponentu app/page.jsx importujemo komponentu Link
+
+09. Server vs Client Components & Router Hooks
+-u komponentu [id]/page.jsx importujemo i kreiramo funkciju useRouter iz paketa Next Navigation
+-vrijednost funkcije useRouter() pohranjujemo u varijablu const router
+-dodajemo direktivu 'use client'
+-importujemo i kreiramo funkciju useParams()
+-vrijednost funkcije useParams() pohranjujemo u destruktuiranu varijablu const { id }
+-importujemo i kreiramo funkciju useSearchParams()
+-vrijednost funkcije useSearchParams() pohranjujemo u varijablu const searchParams
+-importujemo i kreiramo funkciju usePathname()
+-vrijednost funkcije usePathname() pohranjujemo u varijablu const pathname
+
+10. Start On The Navbar
+-preuzmemo folder _theme_files
+-kreiramo folder components i komponentu Navbar.jsx
+-u komponentu layout.jsx importujemo komponentu Navbar.jsx
+-u komponentu Navbar.jsx importujemo komponentu Images iz paketa Next Image
+-importujemo slike logo i profileDefault
+
+11. Navbar Links, Dropdowns & React Icons
+-u komponentu Navbar.jsx importujemo komponentu Link
+-preimenujemo HTML elemente <a> sa komponentom Link
+-u terminalu instaliramo paket React Icons
+-importujemo funkciju useState()
+-kreiramo state varijablu isMobileMenuOpen i set funkciju setIsMobileMenuOpen
+-u div elementu za Mobile menu button, button elementu dodajemo dogadaj onClick
+-u dogadaj onClick proslijedujemo anonimnu funkciju
+-u anonimnu funkciju proslijedujemo funkciju setIsMobileMenuOpen
+-u jsx dodajemo uslov {isMobileMenuOpen && (...)} i div element za Mobile menu
+-kreiramo state varijablu isProfileMenuOpen i set funkciju setIsProfileMenuOpen
+-u div elementu za Profile dropdown button, button elementu dodajemo dogadaj onClick
+-u dodajemo onClick proslijedujemo anonimnu funkciju
+-u anonimnu funkciju proslijedujemo funkciju setIsProfileMenuOpen
+-dodajemo uslov {isProfileMenuOpen && (...)}
+
+12. Active Links & Conditional Rendering
+-u komponentu Navbar.jsx importujemo i kreiramo funkciju usePathname
+-vrijednost funkcije usePathname() pohranjujemo u varijablu const pathname
+-u div elementu za Desktop Menu Hidden below md screens, komponenti Link dodajemo dinamicku klasu
+-u dinamicku klasu dodajemo uslov ternani operator pathname === '/'
+-kreiramo state varijablu isLoggedIn i set funkciju setLoggedIn
+-dodajemo nekoliko uslova {isLoggedIn && (...)}
+-u div elementu za Right Side Menu dodajemo uslov {!isLoggedIn && (...)}
+
+13. Homepage Components
+-u foderu components kreiramo komponentu Hero.jsx
+-kreiramo komponentu InfoBoxes.jsx
+-u komponentu app/page.jsx importujemo komponente Hero.jsx i InfoBoxes.jsx
+-kreiramo komponentu InfoBox.jsx
+-u komponenti InfoBox.jsx funkciji InfoBox() dodajemo parametre destruktuirane props
+-u komponentu InfoBoxes.jsx importujemo komponentu InfoBox
+-kreiramo komponentu Footer.jsx
+-u komponentu layout.jsx importujemo komponentu Footer.jsx
+
+14. Properties Page
+-kreiramo komponentu PropertyCard.jsx
+
+15. Property Card Dynamic Data
+-u komponenti PropertyCard.jsx, funkciji PropertyCard() dodajemo parametar destruktuirani prop property
+-kreiramo funkciju getRateDisplay()
+-importujemo React ikonice
+-dinamicki prikazujemo podatke u jsx-u
+
+16. Home Property Listings
+-u folderu components kreiramo komponentu HomeProperties.jsx
+-u komponentu app/page.jsx importujemo komponentu HomeProperties.jsx
+-u komponenti HomeProperties.jsx u jsx dodajemo ternarni uslov recentProperties === 0 
+
+17. Custom Not Found & Loading Pages
+-u folderu app kreiramo komponentu not-found.jsx
+-u folderu app kreiramo komponentu loading.jsx
+-u terminalu instaliramo paket React Spinners
+-u komponentu loading.jsx importujemo komponentu ClipLoader
