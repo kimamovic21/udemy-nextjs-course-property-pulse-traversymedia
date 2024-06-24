@@ -74,7 +74,7 @@ Section 2. Next.js Fundamentals & Project Start
 -u div elementu za Right Side Menu dodajemo uslov {!isLoggedIn && (...)}
 
 13. Homepage Components
--u foderu components kreiramo komponentu Hero.jsx
+-u folderu components kreiramo komponentu Hero.jsx
 -kreiramo komponentu InfoBoxes.jsx
 -u komponentu app/page.jsx importujemo komponente Hero.jsx i InfoBoxes.jsx
 -kreiramo komponentu InfoBox.jsx
@@ -102,3 +102,118 @@ Section 2. Next.js Fundamentals & Project Start
 -u folderu app kreiramo komponentu loading.jsx
 -u terminalu instaliramo paket React Spinners
 -u komponentu loading.jsx importujemo komponentu ClipLoader
+
+
+Section 3: Database, API Routes & Property Components
+
+18. Create MongoDB Database
+-kreiramo fajlove .env.local i .env.local.example
+-u env.local fajlu kreiramo varijable NEXT_PUBLIC_DOMAIN, NEXT_PUBLIC_API_DOMAIN i MONGODB_URI
+
+19. MongoDB Compass & Importing Data
+-u MongoDB bazi podataka kreiramo bazu sa imenom propertypulse
+-u bazi propertypulse kreiramo kolekciju properties
+-kreiramo properties-mongo.json fajl
+-taj fajl importujemo u kolekciju properties
+
+20. Database Connection & Mongoose
+-kreiramo folder config
+-u folderu config kreiramo database.js fajl
+-u terminalu instaliramo pakete MongoDB i Mongoose
+-u database.js fajl importujemo paket mongoose
+-kreiramo varijablu let connected
+-kreiramo asinhronu funkciju connectDB()
+-u funkciju connectDB() dodajemo metodu mongoose.set()
+-dodajemo uslov if (connected)
+-dodajemo blokove koda try - catch
+-u terminalu instaliramo paket Colors
+
+21. Your First API Route
+-u folderu app kreiramo folder api
+-u folderu api kreiramo folder properties i route.js fajl
+-u route.js fajlu kreiramo i eksportujemo asinhronu funkciju GET()
+-u funkciju GET dodajemo blokove koda try - catch
+-otvorimo link http://localhost:3000/api/properties
+-importujemo funkciju connectDB
+-u blok koda try dodajemo funkciju connectDB()
+
+22. Property & User Models
+-kreiramo folder models
+-u folderu models kreiramo User.js fajl
+-u User.js fajlu kreiramo funkciju new Schema({ ... })
+-vrijednost funkcije new Schema() pohranjujemo u varijablu const UserSchema
+-importujemo objekte iz paketa Mongoose
+-kreiramo varijablu const User
+-varijablu User eksportujemo kao default
+-u folder models kreiramo Property.js fajl
+-u Property.js fajlu kreiramo funkciju new Schema({ ... })
+-vrijednost funkcije new Schema() pohranjujemo u varijablu const PropertySchema
+-kreiramo varijablu const Property
+-varijablu const Property eksportujemo kao default
+
+23. Fetch Data Using Server Component
+-u properties/route.js fajl importujemo model Property
+-dodajemo metodu await Property.find({ });
+-vrijednost metode Property.find() pohranjujemo u varijablu const properties
+-u komponenti properties/page.jsx kreiramo asinhronu funkciju  fetchProperties()
+-u funkciju fetchProperties() dodajemo blokove koda try - catch
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (!res.ok)
+-dodajemo return res.json()
+-varijabli properties dodajemo metodu sort()
+-u komponenti HomeProperties.jsx kreiramo funkciju fetchProperties() 
+-kreiramo varijablu const properties
+
+24. Requests File
+-kreiramo folder utils i requests.js fajl
+-u requests.js fajlu kreiramo i eksportujemo asinhronu funkciju fetchProperties()
+-u komponentu HomeProperties.jsx importujemo funkciju fetchProperties()
+-u komponentu properties/page.js importujemo funkciju fetchProperties()
+-u requests.js fajlu kreiramo varijablu const apiDomain
+-u funkciju fetchProperties() dodajemo uslov if (!apiDomain)
+
+25. Fetch Single Property
+-u folderu properties kreiramo folder [id]
+-u folderu [id] kreiramo route.js fajl
+-u [id]/route.js fajlu kreiramo i eksportujemo asinhronu funkciju GET()
+-funkciji GET dodajemo parametre request i { params }
+-u komponentu [id]/page.jsx dodajemo direktivu 'use client'
+-importujemo funkcije useState i useEffect
+-importujemo funkciju useParams iz paketa Next Navigation
+-u requests.js fajlu kreiramo i eksportujemo asinhronu funkciju fetchProperty(id)
+-u komponentu [id]/page.jsx importujemo funkciju fetchProperty
+-iz funkciji useParams() destruktuiramo varijablu const { id }
+-kreiramo state varijable property i loading
+-kreiramo set funkcije setProperty i setLoading
+-kreiramo funkciju useEffect()
+-u funkciji useEffect() kreiramo anonimnu funkciju fetchPropertyData
+-u funkciju fetchPropertyData dodajemo uslov if (!id) return
+-dodajemo blokove koda try - catch - finally
+-u bloku koda try kreiramo varijablu const property
+-dodajemo funkciju setProperty(property)
+-u blok koda finally dodajemo funkciju setLoading(false)
+-u funkciju useEffect() dodajemo uslov if (property === null)
+-u uslov if dodajemo funkciju fetchPropertyData()
+
+26. Single Property Page
+-u folderu components kreiramo komponentu PropertyHeaderImage.jsx
+-u komponentu [id]/page.jsx importujemo komponentu PropertyHeaderImage.jsx
+-dodajemo uslov if (!property && !loading)
+-u return izjavu dodajemo komponentu PropertyHeaderImage
+-komponenti PropertyHeaderImage dodajemo prop image
+-u komponenti PropertyHeaderImage.jsx, funkciji PropertyHeaderImage() dodajemo parametar destruktuirani prop image
+-importujemo komponente Image iz paketa Next Image
+-u tailwind.config.js fajlu dodajemo konfiguracione objekte fontFamily i gridTemplateColumns
+
+27. Property Details Component
+-u folderu components kreiramo komponentu PropertyDetails.jsx
+-iz komponente [id]/page.jsx kopiramo main HTML element i sadrzaj unutar njega u komponentu PropertyDetails.jsx
+-u return izjavi komponenti PropertyDetails dodajemo prop property
+-u komponenti PropertyDetails.jsx funkciji PropertyDetails() dodajemo parametar destruktuirani prop property
+-u return izjavi dodajemo nekoliko ternarnih uslova property?.rates ? (...) : (...)
+-dinamicki prikazujemo vrijednost varijabli
+-dodajemo metodu property?.amenities?.map()
+
+28. Spinner Component
+-u folderu components kreiramo komponentu Spinner.jsx
+-u komponentu [id]/page.jsx importujemo komponentu Spinner.jsx
