@@ -217,3 +217,81 @@ Section 3: Database, API Routes & Property Components
 28. Spinner Component
 -u folderu components kreiramo komponentu Spinner.jsx
 -u komponentu [id]/page.jsx importujemo komponentu Spinner.jsx
+
+
+Section 4: Next Auth, Sessions & Google Providers
+
+29. Google OAuth Setup
+-otvorimo link https://console.cloud.google.com/
+-kreiramo novi projekt 
+-u .env.local fajlu kreiramo varijable GOOGLE_CLIENT_ID i GOOGLE_CLIENT_SECRET
+
+30. Next Auth & Provider Setup
+-otvorimo link https://next-auth.js.org/
+-u terminalu instaliramo paket Next Auth sa komandom npm i next-auth
+-u folderu app/api kreiramo folder auth
+-u folderu auth kreiramo folder [...nextauth]
+-u folderu [...nextauth] kreiramo route.js fajl
+-u folderu utils kreiramo authOptions.js fajl
+-u authOptions.js fajlu kreiramo i eksportujemo konfiguracioni objekt authOptions
+-u konfiguracionom objektu authOptions kreiramo konfiguracione niz providers i konfiguracioni objekt callbacks
+-u objektu callbacks kreiramo asinhrone funkcije signIn() i session()
+-u app/api/auth/[...nextauth] folderu u route.js fajl importujemo objekt authOptions i funkciju NextAuth
+-kreiramo funkciju NextAuth(authOptions)
+-vrijednost funkcije NextAuth() pohranjujemo u varijablu const handler
+-eksportujemo funkciju handler kao GET i POST
+
+31. Session Provider Wrapper
+-u folderu components kreiramo komponentu AuthProvider.jsx
+-u komponentu AuthProvider.jsx importujemo komponentu SessionProvider iz paketa Next Auth
+-funkciji AuthProvider() dodajemo parametar destruktuirani prop children
+-u komponentu layout.jsx importujemo komponentu AuthProvider.jsx
+-kreiramo nove varijable NEXT_AUTH_URL, NEXT_AUTH_URL_INTERNAL, NEXT_AUTH_URL_SECRET u .env fajlu
+-u terminal ukucamo komandu openssl rand -base64 32 da generisemo Next Auth Secret
+-u komponentu AuthProvider.jsx dodajemo direktivu 'use client'
+
+32. Sign In Button
+-u komponentu Navbar.jsx importujemo funkcije  signIn, signOut, useSession, getProviders 
+-kreiramo funkciju useSession()
+-iz funkcije useSession() destruktuiramo varijablu const { data: session }
+-u komponenti Navbar.jsx u return izjavi umjesto uslova isLoggedIn && (...) dodajemo session && (...)
+-preimenujemo varijablu isLoggedIn u providers, a set funkciju setIsLoggedIn u setProviders
+-importujemo i kreiramo funkciju useEffect()
+-u funkciji useEffect() kreiramo asinhronu funkciju setAuthProviders
+-u funkciji setAuthProviders() kreiramo varijablu const res
+-dodajemo set funkciju setProviders u koju proslijedujemo vrijednost varijable res
+-pozivamo funkciju setAuthProviders()
+-u return izjavi dodajemo metodu {providers && Object?.values(providers)?.map()}
+-u metodu map dodajemo button element
+-button elementu dodajemo dogadaj onClick
+-u dogadaj onClick proslijedujemo anonimnu funkciju
+-u anonimnu funkciju proslijedujemo funkciju signIn()
+-dodajemo metodu {!session && providers && Object?.values(providers)?.map()} za mobile menu 
+
+33. Save User to Databse & Session
+-u authOptions.js fajl importujemo funkciju connectDB() i model User
+-u funkciju signIn() dodajemo funkciju await connectDB()
+-kreiramo varijablu const userExists
+-dodajemo uslov if (!userExists)
+-u uslovu if (!userExists) kreiramo varijablu const username 
+-dodajemo metodu await User.create({ ... })
+-dodajemo return true
+-u funkciji session() kreiramo varijablu const user
+-dodajemo metodu session?.user?.id = User?._id.toString()
+-dodajemo return session
+
+34. Profile Image
+-u komponenti Navbar.jsx kreiramo varijablu const profileImage
+-u komponentu Image za korisnika proslijedujemo u prop src vrijednost varijable profileImage
+-u next.config.js fajl dodajemo objekt konfiguracioni objekt images
+
+35. Sign Out & Protect Routes
+-u komponenti Navbar.jsx, button elementu Sign Out dodajemo dogadaj onClick
+-u dogadaj onClick proslijedujemo anonimnu funkciju
+-u anonimnu funkciju proslijedujemo funkciju signOut()
+-kreiramo middleware.js fajl
+-u middleware.js fajlu eksportujemo funkciju default
+-kreiramo i eksportujemo konfiguracioni objekt varijablu const config
+-u komponenti Navbar.jsx komponentama Link Your Profile i Saved Properties dodajemo dogadaj onClick
+-u dogadaj onClick proslijedujemo anonimnu funkciju
+-u anonimnu funkciju proslijedujemo funkciju setIsProfileMenuOpen(false) da se menu ukloni kada kliknemo na profil i sacuvane nekretnine
