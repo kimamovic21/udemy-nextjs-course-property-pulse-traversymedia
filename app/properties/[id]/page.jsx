@@ -6,6 +6,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
 import PropertyImageHeader from '@/components/PropertyImageHeader';
 import PropertyDetails from '@/components/PropertyDetails';
+import PropertyImages from '@/components/PropertyImages';
 import Spinner from '@/components/Spinner';
 
 const PropertyPage = () => {
@@ -22,7 +23,7 @@ const PropertyPage = () => {
         const property = await fetchProperty(id);
         setProperty(property);
       } catch (error) {
-        console.log('Error fetching property', error);
+        console.error('Error fetching property', error);
       } finally {
         setLoading(false);
       };
@@ -149,6 +150,8 @@ const PropertyPage = () => {
               </div>
             </div>
           </section>
+
+          <PropertyImages images={property.images} />
         </>
       )}
     </>

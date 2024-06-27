@@ -295,3 +295,109 @@ Section 4: Next Auth, Sessions & Google Providers
 -u komponenti Navbar.jsx komponentama Link Your Profile i Saved Properties dodajemo dogadaj onClick
 -u dogadaj onClick proslijedujemo anonimnu funkciju
 -u anonimnu funkciju proslijedujemo funkciju setIsProfileMenuOpen(false) da se menu ukloni kada kliknemo na profil i sacuvane nekretnine
+
+
+Section 5: Create Properties & Cloudinary Integration
+
+36. Add Property Form & Component State
+-kreiramo komponentu PropertyAddForm.jsx
+-komponenti PropertyAddForm.jsx dodajemo direktivu 'use client'
+-kopiramo form element i ostale HTML elemente iz foldera _theme_files
+-u komponentu properties/add/page.jsx importujemo komponentu PropertyAddForm.jsx
+-u komponenti PropertyAddForm.jsx kreiramo state varijablu mounted i set funkciju setMounded()
+-kreiramo funkciju useEffect()
+-kreiramo state varijablu fields i set funkciju setFields()
+-kreiramo tri funkcije handleChange(), handleAmenitiesChange() i  handleImageChange()
+-select elementu dodajemo prop value i dogadaj onChange
+-input elementima dodajemo prop value i dogadaj onChange
+
+37. Form Input Handlers
+-u komponenti PropertyAddForm.jsx, funkciji handleChange() dodajemo parametar e
+-u funkciji handleChange() destruktuiramo varijable const { name, value } iz metode e.target
+-dodajemo uslov if(name.includes('.'))
+-u uslov if destruktuiramo varijable const [outerKey, innerKey] iz metode name.split()
+-dodajemo set funkciju setFields()
+-u funkciju setFields() proslijedujemo anonimnu funkciju sa parametrom prevFields
+-dodajemo uslov else
+-u uslov else dodajemo funkciju setFields()
+-funkciji handleAmenitiesChange() dodajemo parametar e
+-u funkciji handleAmenitiesChange() destruktuiramo varijable const { value, checked } iz metode e.target
+-kreiramo varijablu const updatedAmenities
+-dodajemo uslov if (checked) i else
+-u if (checked) dodajemo metodu updatedAmenities.push(value)
+-u uslovu else kreiramo varijablu const index 
+-dodajemo uslov if (index !== -1)
+-u uslov if (index !== -1) dodajemo metodu updatedAmenities.splice(index, 1)
+-izvan if - else uslova dodajemo funkciju setFields()
+-u funkciju setFields() proslijedujemo anonimnu funkciju sa parametrom prevFields
+-funkciji handleImageChange() dodajemo parametar e
+-destruktuiramo varijablu const { files } iz metode e.target
+-kreiramo varijablu const updatedImages 
+-dodajemo petlji for()
+-dodajemo funkciju setFields()
+-u funkciju setFields() proslijedujemo anonimnu funkciju sa parametrom prevFields
+
+38. Add Property POST API Route
+-u komponenti PropertyAddForm.jsx form elementu dodajemo props action, method i encType
+-u properties/route.js fajlu kreiramo i eksportujemo asinhronu funkciju POST() sa parametrom request
+-u funkciji POST kreiramo blokove koda try - catch
+-u blokove koda try - catch dodajemo funkciju new Response()
+-u bloku koda try dodajemo metodu await request.formData()
+-vrijednost metode request.formData() pohranjujemo u varijablu const formData
+-kreiramo varijable const amenities i const images
+-kreiramo varijablu objekt const propertyData
+
+39. Get User & Submit To Database
+-u api/properties/route.js fajl importujemo funkciju getServerSession iz paketa Next Auth
+-importujemo funkciju authOptions
+-u funkciju POST() dodajemo funkciju connectDB()
+-kreiramo funkciju getServerSession(authOptions)
+-vrijednost funkcije getServerSession() pohranjujemo u varijablu const session
+-dodajemo uslov if (!session)
+-u uslov if (!session) dodajemo funkciju new Response()
+-kreiramo varijablu const userId
+-u objekt const propertyData dodajemo varijablu owner: userId
+-u folderu utils kreiramo getSessionUser.js fajl
+-u getSessionUser.js fajlu kreiramo i eksportujemo asinhronu funkciju getSessionUser()
+-u funkciju getSessionUser() dodajemo blokove koda try - catch
+-u blok koda try dodajemo uslov if (!session || !session.user)
+-u blok koda catch u return dodajemo return null
+-u properties/route.js fajl importujemo i kreiramo funkciju getSessionUser()
+-vrijednost funkcije getSessionUser() pohranjujemo u varijablu const sessionUser
+-dodajemo uslov if (!sessionUser || !sessionUser.userId) 
+-u uslov if dodajemo funkciju new Response()
+-destruktuiramo varijablu const { userId } iz varijable sessionUser
+-kreiramo varijablu const newProperty
+-dodajemo metodu await newProperty.save()
+-dodajemo return Response.redirect()
+
+40. Cloudinary Image Upload
+-otvorimo web stranicu https://cloudinary.com/ i kreiranmo racun
+-u .env.local fajlu kreiramo varijable CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY i CLOUDINARY_API_SECRET
+-u terminalu instaliramo paket Cloudinary sa komandom npm i cloudinary
+-na servisu Cloudinary kreiramo folder udemy-nextjs-propertypulse
+-u folderu config kreiramo cloudinary.js fajl
+-u cloudinary.js fajl importujemo varijablu cloudinary
+-varijabli cloudinary dodajemo konfiguracioni objekt
+-u konfiguracioni objekt dodajemo varijable cloud_name, api_key i api_secret
+-varijablu cloudinary eksportujemo kao default
+-u properties/route.js fajl importujemo varijablu cloudinary
+-kreiramo varijablu const imageUploadPromises
+-kreiramo petlju for (const image of images)
+-u petlji for kreiramo varijable const imageBuffer, const imageArray, const imageData
+-kreiramo varijablu const imageBase64
+-kreiramo varijablu const result
+-dodajemo metodu imageUploadPromises.push(result.secure_url)
+-kreiramo varijablu const uploadedImages
+-dodajemo metodu propertyData.images = uploadedImages
+-posaljemo formu sa slikama i otvorimo folder sa slikama na servisu Cloudinary
+
+41. Property Image Display
+-u requests.js fajlu,u metodu fetch() dodajemo konfiguracioni objekt
+-u next.config.js fajl dodajemo konfiguracioni objekt za prikazivanje slika sa servisa Cloudinary
+-kreiramo komponentu PropertyImages.jsx
+-u komponentu properties/[id]/page.jsx importujemo komandu PropertyImages.jsx
+-u komponenti PropertyImages.jsx dodajemo funkciji PropertyImages() dodajemo parametar destruktuirani prop images
+-u jsx-u u return izjavi dodajemo ternani uslov images.length === 1 ? (...) : (...)
+-dodajemo metodu images.map()
+-div elementu u metodi map() dodajemo dinamicku klasu
