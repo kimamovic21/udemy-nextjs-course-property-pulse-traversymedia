@@ -1,7 +1,14 @@
 'use client';
 import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { fetchProperty } from "@/utils/requests";
 
-const PropertyAddForm = () => {
+const PropertyEditForm = () => {
+  const { id } = useParams();
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
   const [mounted, setMounded] = useState(false);
   const [fields, setFields] = useState({
     type: '',
@@ -27,11 +34,38 @@ const PropertyAddForm = () => {
       email: '',
       phone: '',
     },
-    images: [],
   });
 
   useEffect(() => {
     setMounded(true);
+
+    // Fetch property data for form
+    const fetchPropertyData = async () => {
+        try {
+            const propertyData = await fetchProperty(id);
+
+            // Check rates for null, if so then make empty string
+            if (propertyData && propertyData.rates) {
+                const defaultRates = { ...propertyData.rates };
+
+                for (const rate in defaultRates) {
+                    if (defaultRates[rate] === null) {
+                        defaultRates[rate] = '';
+                    };
+                };  
+
+                propertyData.rates = defaultRates;
+            };
+
+            setFields(propertyData);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        };
+    };
+
+    fetchPropertyData();
   }, []);
 
   const handleChange = (e) => {
@@ -60,7 +94,7 @@ const PropertyAddForm = () => {
     const { value, checked } = e.target;
 
     // Clone the current array
-    const updatedAmenities = [...fields.amenities];
+    const updatedAmenities = [...fields?.amenities];
 
     if (checked) {
         // Add value to array
@@ -81,32 +115,35 @@ const PropertyAddForm = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const { files } = e.target;
-    
-    // Clone images array
-    const updatedImages = [...fields.images];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    // Add new files to the array
-    for (const file of files) {
-        updatedImages.push(file);
+    try {
+        const formData = new FormData(e.target); 
+
+        const res = await fetch(`/api/properties/${id}`, {
+            method: 'PUT',
+            body: formData,
+        });
+
+        if (res.status === 200) {
+            router.push(`/properties/${id}`);
+            toast.success('Property updated successfully!');
+        } else if (res.status === 401 || res.status === 403) {
+            toast.error('Permission denied!');
+        } else {
+            toast.error('Something went wrong');
+        };
+    } catch (error) {
+        console.error(error);
+        toast.error('Something went wrong');
     };
-
-    // Update state with array of images
-    setFields((prevFields) => ({
-        ...prevFields,
-        images: updatedImages,
-    }));
   };
 
-  return (mounted && (
-    <form 
-        action='/api/properties' 
-        method='POST' 
-        encType="multipart/form-data"
-    >
+  return (mounted && !loading && (
+    <form onSubmit={handleSubmit}>
         <h2 className="text-3xl text-center font-semibold mb-6">
-            Add Property
+            Edit Property
         </h2>
 
         <div className="mb-4">
@@ -118,7 +155,7 @@ const PropertyAddForm = () => {
                 name="type"
                 className="border rounded w-full py-2 px-3"
                 required
-                value={fields.type}
+                value={fields?.type}
                 onChange={handleChange}
             >
                 <option value="Apartment">Apartment</option>
@@ -141,7 +178,7 @@ const PropertyAddForm = () => {
                 className="border rounded w-full py-2 px-3 mb-2"
                 placeholder="eg. Beautiful Apartment In Miami"
                 required
-                value={fields.name}
+                value={fields?.name}
                 onChange={handleChange}
             />
         </div>
@@ -156,7 +193,7 @@ const PropertyAddForm = () => {
                 className="border rounded w-full py-2 px-3"
                 rows="4"
                 placeholder="Add an optional description of your property"
-                value={fields.description}
+                value={fields?.description}
                 onChange={handleChange}
             ></textarea>
         </div>
@@ -171,7 +208,7 @@ const PropertyAddForm = () => {
                 name="location.street"
                 className="border rounded w-full py-2 px-3 mb-2"
                 placeholder="Street"
-                value={fields.location.street}
+                value={fields?.location?.street}
                 onChange={handleChange}
             />
             <input
@@ -181,7 +218,7 @@ const PropertyAddForm = () => {
                 className="border rounded w-full py-2 px-3 mb-2"
                 placeholder="City"
                 required
-                value={fields.location.city}
+                value={fields?.location?.city}
                 onChange={handleChange}
             />
             <input
@@ -191,7 +228,7 @@ const PropertyAddForm = () => {
                 className="border rounded w-full py-2 px-3 mb-2"
                 placeholder="State"
                 required
-                value={fields.location.state}
+                value={fields?.location?.state}
                 onChange={handleChange}
             />
             <input
@@ -200,7 +237,7 @@ const PropertyAddForm = () => {
                 name="location.zipcode"
                 className="border rounded w-full py-2 px-3 mb-2"
                 placeholder="Zipcode"
-                value={fields.location.zipcode}
+                value={fields?.location.zipcode}
                 onChange={handleChange}
             />
         </div>
@@ -216,7 +253,7 @@ const PropertyAddForm = () => {
                     name="beds"
                     className="border rounded w-full py-2 px-3"
                     required
-                    value={fields.beds}
+                    value={fields?.beds}
                     onChange={handleChange}
                 />
             </div>
@@ -231,7 +268,7 @@ const PropertyAddForm = () => {
                     name="baths"
                     className="border rounded w-full py-2 px-3"
                     required
-                    value={fields.baths}
+                    value={fields?.baths}
                     onChange={handleChange}
                 />
             </div>
@@ -246,7 +283,7 @@ const PropertyAddForm = () => {
                     name="square_feet"
                     className="border rounded w-full py-2 px-3"
                     required
-                    value={fields.square_feet}
+                    value={fields?.square_feet}
                     onChange={handleChange}
                 />
             </div>
@@ -265,7 +302,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Wifi"
                         className="mr-2"
-                        checked={fields.amenities.includes('Wifi')}
+                        checked={fields?.amenities?.includes('Wifi')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_wifi">Wifi</label>
@@ -278,11 +315,12 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Full Kitchen"
                         className="mr-2"
-                        checked={fields.amenities.includes('Full Kitchen')}
+                        checked={fields?.amenities?.includes('Full Kitchen')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_kitchen">Full kitchen</label>
                 </div>
+
                 <div>
                     <input
                         type="checkbox"
@@ -290,11 +328,12 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Washer & Dryer"
                         className="mr-2"
-                        checked={fields.amenities.includes('Washer & Dryer')}
+                        checked={fields?.amenities?.includes('Washer & Dryer')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_washer_dryer">Washer & Dryer</label>
                 </div>
+
                 <div>
                     <input
                         type="checkbox"
@@ -302,7 +341,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Free Parking"
                         className="mr-2"
-                        checked={fields.amenities.includes('Free Parking')}
+                        checked={fields?.amenities?.includes('Free Parking')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_free_parking">Free Parking</label>
@@ -315,7 +354,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Swimming Pool"
                         className="mr-2"
-                        checked={fields.amenities.includes('Swimming Pool')}
+                        checked={fields?.amenities.includes('Swimming Pool')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_pool">Swimming Pool</label>
@@ -328,7 +367,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Hot Tub"
                         className="mr-2"
-                        checked={fields.amenities.includes('Hot Tub')}
+                        checked={fields?.amenities?.includes('Hot Tub')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_hot_tub">Hot Tub</label>
@@ -341,7 +380,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="24/7 Security"
                         className="mr-2"
-                        checked={fields.amenities.includes('24/7 Security')}
+                        checked={fields?.amenities?.includes('24/7 Security')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_24_7_security">24/7 Security</label>
@@ -354,7 +393,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Wheelchair Accessible"
                         className="mr-2"
-                        checked={fields.amenities.includes('Wheelchair Accessible')}
+                        checked={fields?.amenities?.includes('Wheelchair Accessible')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_wheelchair_accessible">Wheelchair Accessible</label>
@@ -367,7 +406,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Elevator Access"
                         className="mr-2"
-                        checked={fields.amenities.includes('Elevator Access')}
+                        checked={fields?.amenities?.includes('Elevator Access')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_elevator_access">Elevator Access</label>
@@ -380,7 +419,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Dishwasher"
                         className="mr-2"
-                        checked={fields.amenities.includes('Dishwasher')}
+                        checked={fields?.amenities?.includes('Dishwasher')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_dishwasher">Dishwasher</label>
@@ -393,7 +432,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Gym/Fitness Center"
                         className="mr-2"
-                        checked={fields.amenities.includes('Gym/Fitness Center')}
+                        checked={fields?.amenities?.includes('Gym/Fitness Center')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_gym_fitness_center">Gym/Fitness Center</label>
@@ -406,7 +445,7 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Air Conditioning"
                         className="mr-2"
-                        checked={fields.amenities.includes('Air Conditioning')}
+                        checked={fields?.amenities?.includes('Air Conditioning')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
@@ -419,12 +458,12 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Balcony/Patio"
                         className="mr-2"
-                        checked={fields.amenities.includes('Balcony/Patio')}
+                        checked={fields?.amenities?.includes('Balcony/Patio')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_balcony_patio">Balcony/Patio</label>
                 </div>
-
+            
                 <div>
                     <input
                         type="checkbox"
@@ -432,23 +471,23 @@ const PropertyAddForm = () => {
                         name="amenities"
                         value="Smart TV"
                         className="mr-2"
-                        checked={fields.amenities.includes('Smart TV')}
+                        checked={fields?.amenities?.includes('Smart TV')}
                         onChange={handleAmenitiesChange}
                     />
                     <label htmlFor="amenity_smart_tv">Smart TV</label>
                 </div>
 
                 <div>
-                <input
-                    type="checkbox"
-                    id="amenity_coffee_maker"
-                    name="amenities"
-                    value="Coffee Maker"
-                    className="mr-2"
-                    checked={fields.amenities.includes('Coffee Maker')}
-                    onChange={handleAmenitiesChange}
-                />
-                <label htmlFor="amenity_coffee_maker">Coffee Maker</label>
+                    <input
+                        type="checkbox"
+                        id="amenity_coffee_maker"
+                        name="amenities"
+                        value="Coffee Maker"
+                        className="mr-2"
+                        checked={fields?.amenities?.includes('Coffee Maker')}
+                        onChange={handleAmenitiesChange}
+                    />
+                    <label htmlFor="amenity_coffee_maker">Coffee Maker</label>
                 </div>
             </div>
         </div>
@@ -457,7 +496,7 @@ const PropertyAddForm = () => {
             <label className="block text-gray-700 font-bold mb-2">
                 Rates (Leave blank if not applicable)
             </label>
-            
+
             <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="flex items-center">
                     <label htmlFor="weekly_rate" className="mr-2">Weekly</label>
@@ -466,7 +505,7 @@ const PropertyAddForm = () => {
                         id="weekly_rate"
                         name="rates.weekly"
                         className="border rounded w-full py-2 px-3"
-                        value={fields.rates.weekly}
+                        value={fields?.rates?.weekly}
                         onChange={handleChange}
                     />
                 </div>
@@ -478,7 +517,7 @@ const PropertyAddForm = () => {
                         id="monthly_rate"
                         name="rates.monthly"
                         className="border rounded w-full py-2 px-3"
-                        value={fields.rates.monthly}
+                        value={fields?.rates?.monthly}
                         onChange={handleChange}
                     />
                 </div>
@@ -490,7 +529,7 @@ const PropertyAddForm = () => {
                         id="nightly_rate"
                         name="rates.nightly"
                         className="border rounded w-full py-2 px-3"
-                        value={fields.rates.nightly}
+                        value={fields?.rates?.nightly}
                         onChange={handleChange}
                     />
                 </div>
@@ -507,7 +546,7 @@ const PropertyAddForm = () => {
                 name="seller_info.name"
                 className="border rounded w-full py-2 px-3"
                 placeholder="Name"
-                value={fields.seller_info.name}
+                value={fields?.seller_info?.name}
                 onChange={handleChange}
             />
         </div>
@@ -523,7 +562,7 @@ const PropertyAddForm = () => {
                 className="border rounded w-full py-2 px-3"
                 placeholder="Email address"
                 required
-                value={fields.seller_info.email}
+                value={fields?.seller_info?.email}
                 onChange={handleChange}
             />
         </div>
@@ -538,24 +577,8 @@ const PropertyAddForm = () => {
                 name="seller_info.phone"
                 className="border rounded w-full py-2 px-3"
                 placeholder="Phone"
-                value={fields.seller_info.phone}
+                value={fields?.seller_info?.phone}
                 onChange={handleChange}
-            />
-        </div>
-
-        <div className="mb-4">
-            <label htmlFor="images" className="block text-gray-700 font-bold mb-2">
-                Images (Select up to 4 images)
-            </label>
-            <input
-                type="file"
-                id="images"
-                name="images"
-                className="border rounded w-full py-2 px-3"
-                accept="image/*"
-                multiple
-                onChange={handleImageChange}
-                required
             />
         </div>
 
@@ -564,11 +587,11 @@ const PropertyAddForm = () => {
                 className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
                 type="submit"
             >
-                Add Property
+                Update Property
             </button>
         </div>
     </form>
   ));
 };
 
-export default PropertyAddForm;
+export default PropertyEditForm;

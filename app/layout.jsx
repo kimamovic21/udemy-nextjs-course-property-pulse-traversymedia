@@ -1,3 +1,5 @@
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '@/assets/styles/globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -19,6 +21,7 @@ const MainLayout = ({ children }) => {
                   {children}
               </main>
               <Footer />
+              <ToastContainer />
           </body>
       </html>
     </AuthProvider>
