@@ -1,7 +1,8 @@
 import Image from "next/image";
 
 const PropertyImages = ({ images }) => {
-    console.log('Property Images', images);
+  console.log('Property Images', images);
+  
   return (
     <section className="bg-blue-50 p-4">
         <div className="container mx-auto">

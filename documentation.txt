@@ -372,7 +372,7 @@ Section 5: Create Properties & Cloudinary Integration
 -dodajemo return Response.redirect()
 
 40. Cloudinary Image Upload
--otvorimo web stranicu https://cloudinary.com/ i kreiranmo racun
+-otvorimo web stranicu https://cloudinary.com/ i kreiramo racun
 -u .env.local fajlu kreiramo varijable CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY i CLOUDINARY_API_SECRET
 -u terminalu instaliramo paket Cloudinary sa komandom npm i cloudinary
 -na servisu Cloudinary kreiramo folder udemy-nextjs-propertypulse
@@ -585,3 +585,101 @@ export const DELETE = async (request, { params }) => {
 -dodajemo uslov else
 -u uslov else dodajemo funkciju toast.error()
 -u blok koda catch dodajemo funkciju toast.error()
+
+
+Section 7: Map, Bookmarks & Sharing
+
+48. Geocoding & Mapbox Map
+-otvorimo web stranicu https://mapbox.com/ i kreiramo racun
+-u fajlovima .env.local i .env.local.example kreiramo varijable NEXT_PUBLIC_MAPBOX_TOKEN, NEXT_PUBLIC_GOOGLE_GEOCODING_API_KEY
+-u terminalu instaliramo pakete sa komandom npm i react-map-gl mapbox-gl react-geocode
+-u folderu components kreiramo komponentu PropertyMap.jsx
+-u komponenti PropertyMap.jsx, funkciji PropertyMap() dodajemo parametar destruktuirani prop property
+-kreiramo state varijable const lat, lng, viewport i loading
+-kreiramo set funkcije setLap, setLng, setViewport i setLoading
+-importujemo i kreiramo funkciju setDefaults()
+-u funkciju setDefaults() dodajemo konfiguracioni objekt
+-kreiramo funkciju useEffect()
+-prvi argument funkcije useEffect() je anonimna funkcija a drugi argument prazan niz
+-u anonimnoj funkciji kreiramo asinhronu funkciju fetchCoords()
+-u funkciji fetchCoords() kreiramo varijablu const res
+-destruktuiramo varijable const { lat, lng }
+-pozivamo funkciju fetchCoords()
+-u funkciju fetchCoords() dodajemo funkcije setLat(lat), setLng(lng), setViewport({ ... }), setLoading(false)
+-dodajemo uslov if (loading)
+-u jsx, u return izjavu dodajemo komponentu Map
+-komponenti Map dodajemo vise props
+-u kopiramo Map dodajemo komponentu Marker
+
+49. Handle Geocode Error
+-u komponenti PropertyMap.jsx kreiramo state varijablu const geocodeError
+-kreiramo set funkciju setGeocodeError
+-u funkciju fetchCoords dodajemo blokove koda try - catch
+-u blok koda try dodajemo uslov if (res.results.length === 0)
+-u blok koda catch dodajemo funkcije setGeocodeError(true) i setLoading(false);
+-dodajemo uslov if (geocodeError)
+
+50. Property Page Cleanup
+-u folderu components kreiramo komponentu BookmarkButton.jsx
+-u komponentu properties/[id]/page.jsx importujemo komponentu BookmarkButton.jsx
+-u jsx-u, u return izjavi komponenti BookmarkButton dodajemo prop property
+-u prop property proslijedujemo vrijednost varijable property
+-kreiramo komponentu ShareButtons.jsx
+-u komponentu properties/[id]/page.jsx importujemo komponentu ShareButtons.jsx
+-kreiramo komponentu PropertyContactForm.jsx
+-u komponentu properties/[id]/page.js importujemo komponentu PropertyContactForm.jsx
+
+51. Bookmark API Route
+-u folderu app/api kreiramo folder bookmarks i route.js fajl
+-u route.js fajlu kreiramo i eksportujemo funkciju POST
+-u funkciji POST kreiramo blokove koda try - catch
+-u blok koda try dodajemo funkciju await connectDB()
+-iz metode await request.json() destruktuiramo varijablu const { propertyId }
+-vrijednost metode await getSessionUser() pohranjujemo u varijablu const sessionUser
+-dodajemo uslov if (!sessionUser || !session.userId)
+-destruktuiramo varijablu const { userId }
+-kreiramo varijablu const user 
+-kreiramo varijable let isBookmarked i let message
+-dodajemo uslov  if (isBookmarked) - else
+-dodajemo return new Response()
+
+52. Bookmark Button Request
+-u komponentu BookmarkButton.jsx importujemo i kreiramo funkciju useSession()
+-funkciji BookmarkButton() dodajemo parametar destruktuirani prop property
+-destruktuiramo varijablu const { data: session }
+-kreiramo varijablu const userId
+-kreiramo state varijablu isBookmarked i set funkciju setIsBookmarked
+-kreiramo funkciju handleClick()
+-button elementu dodajemo dogadaj onClick i proslijedujemo funkciju handleClick
+-u funkciju handleClick() dodajemo uslov  if (!userId)
+-dodajemo blokove koda try - catch
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200)
+-u uslovu if (res.status === 200) kreiramo varijablu const data
+-dodajemo objekt toast.success()
+-dodajemo funkciju setIsBookmarked(data.isBookmarked)
+
+53. Bookmark Status & Button Toggle
+-u komponenti BookmarkButton.jsx u jsx-u, return izjavi dodajemo ternarni uslov isBookmarked ? (...) : (...) za pojavljivanje dugmadi
+-u folderu app/api/bookmarks kreiramo folder check i route.js fajl
+-u check/route.js fajlu kreiramo i eksportujemo funkciju POST()
+-u komponenti BookmarkButton.jsx kreiramo funkcija useEffect()
+-u funkciji useEffect kreiramo asinhronu funkciju checkBookmarkStatus() 
+-kreiramo state varijablu const loading i set funkciju setLoading()
+-dodajemo uslov if (loading)
+-u funkciju useEffect() dodajemo uslov if (!userId) 
+
+54. Saved properties Page
+-u folderu app/properties kreiramo folder saved i komponentu page.jsx
+-u check/route.js fajlu kreiramo i eksportujemo asinhronu funkciju GET()
+-u komponenti saved/page.jsx kreiramo state varijable const properties i const loading,  
+-kreiramo set funkcije setProperties() i setLoading()
+-importujemo i kreiramo funkciju useEffect()
+-u funkciji useEffect() kreiramo asinhronu funkciju fetchSavedProperties()
+-u funkciji fetchSavedProperties() kreiramo blokove koda try - catch - finally
+
+55. Share Buttons
+-otvorimo link: https://www.npmjs.com/package/react-share
+-u terminalu instaliramo paket React Share sa komandom npm i react-share
+-u komponentu ShareButtons.jsx importujemo komponente Button i ikonice
+-komponentama Button dodajemo props
