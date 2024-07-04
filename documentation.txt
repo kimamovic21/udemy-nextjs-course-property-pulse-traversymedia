@@ -683,3 +683,70 @@ Section 7: Map, Bookmarks & Sharing
 -u terminalu instaliramo paket React Share sa komandom npm i react-share
 -u komponentu ShareButtons.jsx importujemo komponente Button i ikonice
 -komponentama Button dodajemo props
+
+
+Section 8: Property Search
+
+56. Property Search Component
+-u folderu components kreiramo komponentu PropertySearchForm.jsx
+-u komponentu Hero.jsx importujemo komponentu PropertySearchForm.jsx
+-u komponentu PropertySearchForm.jsx dodajemo direktivu 'use client'
+-kreiramo state varijable const location i const propertyType
+-kreiramo set funkcije setLocation i setPropertyType
+-u input element dodajemo prop value i dogadaj onChange
+-u prop value proslijedujemo vrijednost varijable location
+-u dogadaj onChange proslijedujemo anonimnu funkciju sa parametrom e
+-u anonimnu funkciju proslijedujemo funkciju setLocation()
+-isto ponovimo za select element
+-kreiramo funkciju handleSubmit()
+-form elementu dodajemo dogadaj onSubmit
+-u dogadaj onSubmit proslijedujemo funkciju handleSubmit
+-importujemo i kreiramo funkciju useRouter()
+-vrijednost funkcije user() pohranjujemo u varijablu const router
+-dodajemo uslov if (location === '' && propertyType === 'All') i else
+-u uslov if dodajemo metodu router.push('/properties')
+-u uslovu else kreiramo varijablu const query
+-dodajemo metodu router.push()
+
+57. Search API Endpoint
+-u folderu app/api/properties kreiramo folder search i route.js fajl
+-u search/route.js fajlu kreiramo i eksportujemo asinhronu funkciju GET() sa parametrom request
+-u funkciji GET() kreiramo blokove koda try - catch
+-u blok koda try dodajemo funkciju await connectDB()
+-destruktuiramo varijablu const { searchParams } iz funkcije new URL(request.url)
+-kreiramo varijablu const location i const propertyType
+-dodajemo metodu new Response()
+-u blok koda catch dodajemo metodu new Response()
+-kreiramo varijablu const locationPattern
+-kreiramo varijablu objekt let query 
+-dodajemo uslov if (propertyType && propertyType !== 'All')
+-kreiramo varijablu const properties
+-u metodu JSON.stringify() proslijedujemo varijablu properties
+-otvorimo rutu http://localhost:3000/api/properties/search?location=Boston&propertyType=All
+-otvorimo rutu http://localhost:3000/properties/search-results?location=Boston&propertyType=All
+
+58. Fetch Results From API
+-u folderu app/properties kreiramo folder search-results i komponentu page.jsx
+-u komponenti page.jsx kreiramo funkciju SearchResultsPage()
+-kreiramo i importujemo funkciju useSearchParams() iz paketa Next/Navigation
+-vrijednost funkcije useSearchParams() pohranjujemo u varijablu const searchParams
+-kreiramo state varijable const properties i const loading
+-kreiramo set funkcije setProperties i setLoading
+-kreiramo varijable const location i const propertyType
+-kreiramo funkciju useEffect()
+-prvi argument je anonimna funkcija u kojoj kreiramo asinhronu funkciju fetchSearchResults
+-drugi argument je niz u koji dodajemo varijable location, propertyType
+-u funkciji fetchSearchResults() kreiramo blokove koda try - catch - finally
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200) i else
+-u uslovu if (res.status === 200) kreiramo varijablu const data
+-dodajemo funkciju setProperties(data)
+-u uslov else dodajemo funkciju setProperties([])
+-u blok koda finally dodajemo funkciju setLoading(false)
+
+59. Display Search Results
+-u komponenti search-results/page.jsx, u jsx-u u return izjavi dodajemo ternani uslov loading ? (...) : (...)
+-dodajemo metodu properties?.map()
+-u metodu map() dodajemo komponentu PropertyCard
+-importujemo komponentu PropertySearchForm.jsx
+-u komponentu properties/page.jsx importujemo komponentu PropertySearchForm.jsx
