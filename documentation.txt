@@ -68,7 +68,7 @@ Section 2. Next.js Fundamentals & Project Start
 -u komponentu Navbar.jsx importujemo i kreiramo funkciju usePathname
 -vrijednost funkcije usePathname() pohranjujemo u varijablu const pathname
 -u div elementu za Desktop Menu Hidden below md screens, komponenti Link dodajemo dinamicku klasu
--u dinamicku klasu dodajemo uslov ternani operator pathname === '/'
+-u dinamicku klasu dodajemo uslov ternarni operator pathname === '/'
 -kreiramo state varijablu isLoggedIn i set funkciju setLoggedIn
 -dodajemo nekoliko uslova {isLoggedIn && (...)}
 -u div elementu za Right Side Menu dodajemo uslov {!isLoggedIn && (...)}
@@ -398,7 +398,7 @@ Section 5: Create Properties & Cloudinary Integration
 -kreiramo komponentu PropertyImages.jsx
 -u komponentu properties/[id]/page.jsx importujemo komandu PropertyImages.jsx
 -u komponenti PropertyImages.jsx dodajemo funkciji PropertyImages() dodajemo parametar destruktuirani prop images
--u jsx-u u return izjavi dodajemo ternani uslov images.length === 1 ? (...) : (...)
+-u jsx-u u return izjavi dodajemo ternarni uslov images.length === 1 ? (...) : (...)
 -dodajemo metodu images.map()
 -div elementu u metodi map() dodajemo dinamicku klasu
 
@@ -444,7 +444,7 @@ Section 6: Profile & Manage Properties
 -u funkciju fetchUserProperties() dodajemo uslov if (session?.user?.id)
 -u uslov if dodajemo pozivamo funkciju fetchUserProperties(session.user.id)
 -u jsx-u u return izjavi dodajemo uslov !loading && properties.length === 0 && (...)
--dodajemo ternani uslov loading ? (...) : (...)
+-dodajemo ternarni uslov loading ? (...) : (...)
 -dodajemo metodu properties?.map()
 -otvorimo rutu http://localhost:3000/profile
 -dinamicki prikazujemo podatke u HTML elementima u metodi map()
@@ -745,8 +745,205 @@ Section 8: Property Search
 -u blok koda finally dodajemo funkciju setLoading(false)
 
 59. Display Search Results
--u komponenti search-results/page.jsx, u jsx-u u return izjavi dodajemo ternani uslov loading ? (...) : (...)
+-u komponenti search-results/page.jsx, u jsx-u u return izjavi dodajemo ternarni uslov loading ? (...) : (...)
 -dodajemo metodu properties?.map()
 -u metodu map() dodajemo komponentu PropertyCard
 -importujemo komponentu PropertySearchForm.jsx
 -u komponentu properties/page.jsx importujemo komponentu PropertySearchForm.jsx
+
+
+Section 9: Messaging System
+
+60. Message Model & Form State
+-u folderu models kreiramo Message.js fajl
+-u Message.js fajlu kreiramo varijable const MessageSchema i const Message
+-u komponenti PropertyContactForm.jsx, funkciji PropertyContactForm() dodajemo parametar destruktuirani prop property
+-kreiramo state varijable i set funkcije
+-input elementima dodajemo prop value i dogadaj onChange
+-kreiramo funkciju handleSubmit()
+-form elementu dodajemo dogadaj onSubmit
+-u dogadaj onSubmit proslijedujemo funkciju handleSubmit
+-u funkciji handleSubmit() kreiramo objekt varijablu const data
+-dodajemo ternarni uslov wasSubmitted ? (...) : (...)
+
+61. Message Submit & API Route
+-u folderu app/api kreiramo folder messages i route.js fajl
+-u route.js fajlu kreiramo i eksportujemo funkciju POST()
+-u funkciji POST() kreiramo blokove koda try - catch
+-u blok koda try dodajemo metodu await connectDB()
+-dodajemo metodu request.json()
+-iz metode request.json() destruktuiramo varijable const { name, email, phone, message, property, ricipient }
+-kreiramo varijablu const sessionUser
+-dodajemo uslov if (!sessionUser || !sessionUser.user)
+-u uslov if dodajemo return new Response()
+-destruktuiramo varijablu const { user }
+-dodajemo uslov if (user.id === recipient) kojim sprijecavamo da posaljemo poruku samom sebi
+-kreiramo varijablu const newMessage 
+-dodajemo metodu await newMessage.save()
+-u blok koda catch dodajemo return new Response()
+-u komponentu PropertyContactForm.jsx, u funkciju handleSubmit() dodajemo blokove koda try - catch - finally
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200)
+-u uslov if (res.status === 200) dodajemo funkciju toast.success() i funkciju setWasSubmitted(true)
+-dodajemo uslov else if (res.status === 400 || res.status ===  401)
+-u uslov else if dodajemo funkciju toast.error(data.message)
+-dodajemo uslov else i funkciju toast.error('Error sending form!')
+-u blok koda catch dodajemo funkciju toast.error('Error sending form!')
+-u blok koda finally dodajemo ser funkcije
+
+62. Require Auth For Contact Form
+-u komponenti PropertyContactForm.jsx. u uslovu res.status === 400 || res.status ===  401
+-importujemo i kreiramo funkciju useSession()
+-destruktuiramo varijablu const { data: session } iz funkcije useSession()
+-u jsx-u, u return izjavi dodajemo ternani uslov !session ? (...) : (...)
+
+63. Fetch Messages
+-u folderu app kreiramo folder messages i komponentu page.jsx
+-u komponenti page.jsx kreiramo funkciju MessagesPage()
+-u folderu app/api/messages kreiramo route.js fajl
+-u route.js fajlu kreiramo i eksportujemo asinhronu funkciju GET()
+-u funkcija GET() kreiramo blokove koda try - catch
+-u blok koda try dodajemo metodu await connectDB()
+-kreiramo varijablu const sessionUser
+-dodajemo uslov if (!sessionUser || !sessionUser.user)
+-destruktuiramo varijablu const { userId }
+-kreiramo varijablu const messages
+-dodajemo return new Response(JSON.stringify(messages))
+-u blok koda catch dodajemo return new Response()
+-u folderu components kreiramo komponentu Messages.jsx
+-u komponentu Messages.jsx importujemo direktivu 'use client'
+-kreiramo state varijable const messages i const loading
+-kreiramo set funkcije setMessages i setLoading
+-kreiramo funkciju useEffect()
+-prvi argument funkcije useEffect() je anonimna funkcija, a drugi argument prazan niz []
+-u anonimnoj funkciji kreiramo asinhronu funkciju getMessages()
+-u funkciji getMessages() kreiramo blokove koda try - catch - finally
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200)
+-u uslovu if kreiramo varijablu const data i dodajemo funkciju setMessages(data)
+-u bloku koda catch (error) ispisujemo error u konzoli
+-u bloku koda finally dodajemo setLoading(false)
+-u komponentu app/messages/pages.jsx importujemo komponentu Messages.jsx
+
+64. Display Messages
+-u folderu components kreiramo komponentu Message.jsx
+-u komponentu Messages.jsx importujemo komponentu Message.jsx
+-dodajemo ternani uslov messages.length === 0 ? (...) : (...)
+-dodajemo metodu messages.map()
+-u metodu map dodajemo komponentu Message
+-komponenti Message dodajemo prop key i message
+-dodajemo ternarni uslov loading ? (<Spinner loading={loading}/>) : (...)
+-u komponenti Message.jsx, funkciji Message dodajemo parametar destruktuirani prop message
+-dinamicki prikazujemo vrijednost varijabla u jsx-u
+
+65. Mark As Read
+-u folderu app/api/messages kreiramo folder [id] i route.js fajl
+-u [id]/route.js fajlu kreiramo i eksportujemo asinhronu funkciju PUT()
+-funkciji PUT() dodajemo parametre request i { params }
+-u funkciji PUT() kreiramo blokove koda try - catch
+-u blok koda try dodajemo metodu await connectDB()
+-destruktuiramo varijablu const { id }
+-kreiramo varijablu const sessionUser
+-dodajemo uslov if (!sessionUser || !sessionUser.user)
+-destruktuiramo varijablu const { userId }
+-kreiramo varijablu const message
+-dodajemo uslov if (!message)
+-dodajemo uslov if (message.recipient.toString() !== userId) 
+-dodajemo metodu message.read = !message.read
+-dodajemo metodu await message.save()
+-dodajemo metodu return new Response(JSON.stringify(message))
+-u blok koda catch dodajemo return new Response('Something went wrong')
+-u komponentu Message.jsx dodajemo direktivu 'use client'
+-kreiramo state varijablu const isRead i set funkciju setIsRead
+-u jsx dodajemo uslov !isRead && (...)
+-kreiramo asinhronu funkciju handleReadClick
+-button elementu Mark As Read (oznaci kao procitano) dodajemo dogadaj onClick
+-u dogadaj onClick proslijedujemo funkciju handleReadClick
+-u button element dodajemo uslov {isRead ? 'Mark As New' : 'Mark As Read'}
+-u funkciji handleReadClick() kreiramo blokove koda try - catch
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200)
+-u uslovu if (res.status === 200) destruktuiramo varijablu const { read }
+-dodajemo funkciju setIsRead(read)
+-dodajemo uslove if (read) i else
+-u uslove if (read) i else dodajemo funkcije toast.success()
+-u blok koda catch(error) dodajemo funkciju toast.error()
+
+66. Delete Messages
+-u messages/[id]/route.js fajlu kreiramo asinhronu funkciju DELETE()
+-funkciji DELETE() dodajemo parametre request i { params }
+-kreiramo blokove koda try - catch
+-u blok koda try dodajemo metodu await connectDB()
+-destruktuiramo varijablu const { id }
+-kreiramo varijablu const sessionUser 
+-dodajemo uslov if (!sessionUser || !sessionUser.user)
+-destruktuiramo varijablu const { userId }
+-kreiramo varijablu const message
+-dodajemo uslov if (!message)
+-dodajemo uslov if (message.recipient.toString() !== userId)
+-dodajemo metodu await message.deleteOne()
+-dodajemo metodu return new Response()
+-u blok koda catch dodajemo return new Response()
+-u komponenti Message.jsx kreiramo asinhronu funkciju handleDeleteClick()
+-u funkciji handleDeleteClick() kreiramo blokove koda try - catch
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200)
+-u uslov if dodajemo funkciju toast.success()
+-u blok koda catch dodajemo funkciju toast.error()
+-kreiramo state varijablu const isDeleted i set funkciju const setIsDeleted
+-u uslov if (res.status === 200) dodajemo funkciju setIsDeleted(true)
+-dodajemo uslov return (isDeleted)
+
+67. Order New First
+-u app/api/messages/route.js fajlu kreiramo varijable const readMessages i const unreadMessages
+-kreiramo varijablu const messages
+
+68. New Message Count Display
+-u folderu app/api/messages kreiramo folderu unread-count i route.js fajl
+-u unread-count/route.js fajlu kreiramo i eksportujemo asinhronu funkciju GET() 
+-u funkciji GET kreiramo blokove koda try - catch
+-u blok koda try dodajemo metodu await connectDB()
+-kreiramo varijablu const sessionUser
+-dodajemo uslov if (!sessionUser || !sessionUser.user)
+-destruktuiramo varijablu const { userId }
+-dodajemo metodu await Message.countDocuments({ ... })
+-vrijednost metode await Message.countDocuments({ ... }) pohranjujemo u varijablu const count
+-dodajemo metodu return new Response()
+-u blok koda catch dodajemo metodu return new Response()
+-u folderu components kreiramo komponentu UnreadMessageCount.jsx
+-u komponentu Navbar.jsx importujemo komponentu UnreadMessageCount.jsx
+-u komponenti UnreadMessageCount.jsx kreiramo state varijablu const unreadCount
+-kreiramo set funkciju setUnreadCount
+-u komponenti Navbar.jsx, u jsx-u komponenti UnreadMessageCount dodajemo prop session
+-u prop session proslijedujemo vrijednost varijable session
+-u komponenti UnreadMessageCount.jsx, funkciji UnreadMessageCount() dodajemo parametar destruktuirani prop session
+-dodajemo varijablu unreadCount u jsx, u return izjavu
+-importujemo i kreiramo funkciju useEffect()
+-prvi argument funkcije useEffect() je anonimna funkcija, a drugi argument je niz 
+-u anonimnoj funkciji kreiramo asinhronu funkciju fetchUnreadMessages()
+-u funkciji fetchUnreadMessages() kreiramo blokove koda try - catch
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (res.status === 200)
+-u uslovu if (res.status === 200) kreiramo varijablu const data
+-dodajemo funkciju setUnreadCount(data)
+-u jsx, u return izjavu dodajemo uslov return unreadCount > 0 && (...)
+
+69. Global Context For Unread Messages
+-kreiramo folder context i globalContext.js fajl
+-u globalContext.js fajl importujemo funkcije createContext, useContext, useState
+-kreiramo varijablu const GlobalContext
+-kreiramo i eksportujemo funkciju GlobalProvider() sa parametrom destruktuiranim prop children
+-u return izjavu dodajemo komponentu GlobalContext.Provider sa otvorenim i zatvorenim tagom
+-izmedu tagova dodajemo prop children
+-kreiramo i eksportujemo funkciju useGlobalContext()
+-iz komponente UnreadMessageCount.jsx premjestamo state varijablu const unreadCount i set funkciju setUnreadCount
+-komponenti GlobalContext.Provider dodajemo prop value
+-u prop value proslijedujemo varijabla unreadCount i funkciju setUnreadCount
+-u komponentu layout.jsx importujemo komponentu GlobalProvider
+-u jsx, u return izjavu dodajemo komponentu GlobalProvider sa otvorenim i zatvorenim tagom
+-u komponentu UnreadMessageCount.jsx importujemo i kreiramo funkciju useGlobalContext()
+-destruktuiramo varijabla unreadCount i funkciju setUnreadCount iz funkcije useGlobalContext()
+-u komponentu Message.jsx importujemo i kreiramo funkciju useGlobalContext()
+-destruktuiramo varijablu const { setUnreadCount } iz funkcije useGlobalContext()
+-u funkciju handleReadClick(), u uslov if (res.status === 200) dodajemo funkciju setUnreadCount()
+-u funkciju handleDeleteClick(), u uslov if (res.status === 200) dodajemo funkciju setUnreadCount()
