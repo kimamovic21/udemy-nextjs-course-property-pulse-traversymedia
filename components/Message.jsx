@@ -5,7 +5,7 @@ import { useGlobalContext } from "@/context/globalContext";
 import Link from "next/link";
 
 const Message = ({ message }) => { 
-  console.log('Message: ', message);
+//   console.log('message: ', message);
   const [isRead, setIsRead] = useState(message.read);
   const [isDeleted, setIsDeleted] = useState(false);
 

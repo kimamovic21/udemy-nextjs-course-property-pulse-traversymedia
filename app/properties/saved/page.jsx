@@ -31,7 +31,7 @@ const SavedPropertiesPage = () => {
     fetchSavedProperties();
   }, []);
 
-  console.log(properties);
+  // console.log('Properties:', properties);
 
   return loading ? (<Spinner loading={loading}/>) : (
     <section className='px-4 py-6 '>

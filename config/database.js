@@ -19,7 +19,7 @@ const connectDB = async () => {
         connected = true;
         console.log(colors.green('MongoDB successfully connected!'));
     } catch (error) {
-        console.log(colors.red(error));
+        console.error(colors.red(error));
     };
 };
 

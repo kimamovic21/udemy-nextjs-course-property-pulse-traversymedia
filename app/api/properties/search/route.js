@@ -36,7 +36,7 @@ export const GET = async (request) => {
       status: 200,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return new Response('Something went wrong', { status: 500 });
   };
 };

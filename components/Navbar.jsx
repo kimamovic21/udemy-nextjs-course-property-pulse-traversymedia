@@ -11,7 +11,7 @@ import UnreadMessageCount from './UnreadMessageCount';
 
 const Navbar = () => {
   const { data: session } = useSession();
-  console.log('Session:', session);
+  // console.log('Session:', session);
 
   const profileImage = session?.user?.image;
 
@@ -29,7 +29,7 @@ const Navbar = () => {
 
     setAuthProviders();
   }, []);
-  console.log('Providers:', providers);
+  // console.log('Providers:', providers);
 
   return (
     <nav className='bg-blue-700 border-b border-blue-500'>

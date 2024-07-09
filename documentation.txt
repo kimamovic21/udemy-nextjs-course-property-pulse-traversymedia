@@ -795,7 +795,7 @@ Section 9: Messaging System
 -u komponenti PropertyContactForm.jsx. u uslovu res.status === 400 || res.status ===  401
 -importujemo i kreiramo funkciju useSession()
 -destruktuiramo varijablu const { data: session } iz funkcije useSession()
--u jsx-u, u return izjavi dodajemo ternani uslov !session ? (...) : (...)
+-u jsx-u, u return izjavi dodajemo ternarni uslov !session ? (...) : (...)
 
 63. Fetch Messages
 -u folderu app kreiramo folder messages i komponentu page.jsx
@@ -828,7 +828,7 @@ Section 9: Messaging System
 64. Display Messages
 -u folderu components kreiramo komponentu Message.jsx
 -u komponentu Messages.jsx importujemo komponentu Message.jsx
--dodajemo ternani uslov messages.length === 0 ? (...) : (...)
+-dodajemo ternarni uslov messages.length === 0 ? (...) : (...)
 -dodajemo metodu messages.map()
 -u metodu map dodajemo komponentu Message
 -komponenti Message dodajemo prop key i message
@@ -947,3 +947,98 @@ Section 9: Messaging System
 -destruktuiramo varijablu const { setUnreadCount } iz funkcije useGlobalContext()
 -u funkciju handleReadClick(), u uslov if (res.status === 200) dodajemo funkciju setUnreadCount()
 -u funkciju handleDeleteClick(), u uslov if (res.status === 200) dodajemo funkciju setUnreadCount()
+
+
+Section 10: Pagination, Featured, Lightbox & Deploy
+
+70. Properties Client Component Refactor
+-u folderu components kreiramo komponentu Properties.jsx
+-u komponenti Properties.jsx kreiramo state varijable const properties i const loading
+-kreiramo state funkcije setProperties i setLoading
+-u jsx, u return izjavu dodajemo ternarni operator loading ? : (...) : (...)
+-u komponentu app/properties/page.jsx importujemo komponentu Properties.jsx
+-importujemo i kreiramo funkciju useEffect()
+-prvi argument je anonimna funkcija, a drugi argument niz []
+-u anonimnoj funkciji kreiramo asinhronu funkciju fetchProperties()
+-u funkciju fetchProperties() dodajemo blokove koda try - catch - finally
+-u bloku koda try kreiramo varijablu const res
+-dodajemo uslov if (!res.ok)
+-kreiramo varijablu const data
+-dodajemo funkciju setProperties(data)
+-u bloku koda catch ispisujemo error poruku
+-u blok koda finally dodajemo funkciju setLoading(false)
+
+71. Implement Pagination
+-u app/api/properties/route.js fajlu, u funkciji GET() kreiramo varijable const page i const pageSize
+-kreiramo varijable const skip i const total
+-kreiramo varijablu objekt const result 
+-u funkciju new Response() proslijedujemo varijablu result
+-u komponenti HomeProperties preimenujemo varijablu const properties u const data 
+-u komponenti Properties.jsx kreiramo state varijable const page, const pageSize, const totalItems
+-kreiramo set funkcije setPage, setPageSize, setTotalItems
+-u funkciju fetchProperties(), u blok koda try dodajemo funkciju setTotalItems
+
+72. Pagination Component
+-u folderu components kreiramo komponentu Pagination.jsx
+-u komponentu Properties.jsx importujemo komponentu Pagination.jsx
+-u jsx-u, u return izjavi komponenti Pagination dodajemo vise props
+-kreiramo funkciju handlePageChange() sa parametrom newPage
+-u funkciju handlePageChange() dodajemo funkciju setPage(newPage)
+-u komponenti Pagination.jsx, funkciji Pagination() dodajemo parametre destruktuirane props { page, pageSize, totalItems, onPageChange }
+-kreiramo varijablu const totalPages
+-button elementima dodajemo prop disabled
+-button elementima dodajemo dogadaje onClick
+-kreiramo funkciju handlePageChange() sa parametrom newPage
+-u dogadaje onClick proslijedujemo vrijednost funkcija handlePageChange()
+-u funkciju handlePageChange() dodajemo uslov if (newPage >= 1 && newPage <= totalPages) 
+-u uslov if dodajemo funkciju onPageChange(newPage)
+
+73. Photoswipe Lightbox
+-otvorimo link https://www.npmjs.com/package/photoswipe
+-u terminalu instaliramo paket Photoswipe sa komandom npm i photoswipe
+-otvorimo link https://www.npmjs.com/package/react-photoswipe-gallery
+-u terminalu instaliramo paket React Photoswipe Gallery sa komandom 
+-u komponentu layout.jsx importujemo css stil za Photoswipe
+-u komponentu PropertyImages.jsx importujemo komponente Gallery i Item iz paketa React Photoswipe Gallery
+-u jsx, u return izjavu dodajemo komponentu Gallery sa otvorenim i zatvorenim tagom
+-u ternarni uslov images.length === 1 dodajemo komponentu Item
+-komponenti Item dodajemo props iz dokumentacije
+-u komponentu Item dodajemo anonimnu funkciju sa parametrom objekt ref i open
+-u anonimnu funkciju dodajemo komponentu Image
+-komponenti Image dodajemo prop ref i dogadaj onClick
+-u metodu map() dodajemo komponentu Item
+
+74. Fetch Featured Properties
+-u MongoDB bazi odredenim nekretnimama stavimo opciju isFeatured: true
+-u folderu app/api/properties kreiramo folder featured i route.js fajl
+-u featured/route.js fajlu kreiramo i eksportujemo funkciju GET() sa parametrom request
+-importujemo funkcije connectDB i model Property
+-u funkciji GET() kreiramo blokove koda try - catch
+-u blok koda try dodajemo metodu await connectDB()
+-kreiramo varijablu const properties
+-dodajemo funkciju return new Response()
+-u blok koda catch ispisujemo error u konzoli
+-dodajemo return new Response()
+-u folderu components kreiramo komponentu FeaturedProperties.jsx
+-u komponentu app/page.jsx importujemo komponentu FeaturedProperties.jsx
+-u utils/request.js fajlu funkciji fetchProperties() dodajemo parametar
+-u metodi fetch() dodajemo ternarni uslov showFeatured ? '/featured' : ''
+-u komponentu FeaturedProperties.jsx importujemo i kreiramo funkciju fetchProperties()
+-vrijednost funkcije fetchProperties() pohranjujemo u varijablu const properties
+
+75. Featured Property Component
+-u folderu components kreiramo komponentu FeaturedPropertyCard.jsx
+-u komponentu FeaturedProperties.jsx importujemo komponentu FeaturedPropertyCard.jsx
+-dodajemo uslov properties.length > 0 && (...)
+-u jsx, u return izjavi dodajemo metodu properties?.map()
+-u komponenti FeaturedPropertyCard.jsx, funkciji FeaturedPropertyCard() dodajemo parametar destruktuirani prop property
+-u jsx-u, u return izjavi dinamicki prikazujemo vrijednost varijabli
+-kreiramo funkciju getRateDisplay()
+-importujemo React ikonice
+
+76. Deploy To Vercel
+-otvorimo link https://www.npmjs.com/package/mongodb
+-u terminalu instaliramo MongoDB paket npm install mongodb
+-kreiramo bazu podataka na web stranici https://www.mongodb.com/atlas/database
+-deplojamo projekt na web stranicu https://vercel.com/
+-dodamo env varijable

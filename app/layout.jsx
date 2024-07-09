@@ -2,6 +2,7 @@ import { ToastContainer } from 'react-toastify';
 import { GlobalProvider } from '@/context/globalContext';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/assets/styles/globals.css';
+import 'photoswipe/dist/photoswipe.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AuthProvider from '@/components/AuthProvider';

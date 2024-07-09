@@ -8,7 +8,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import Spinner from "./Spinner";
 
 const PropertyMap = ({ property }) => {
-  console.log('PropertyMap Component:', property);
+  // console.log('property: ', property);
 
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
@@ -47,8 +47,8 @@ const PropertyMap = ({ property }) => {
         };
 
         const { lat, lng } = res.results[0].geometry.location;
-        console.log('Latitude:', lat);
-        console.log('Longitue:', lng);
+        // console.log('latitude:', lat);
+        // console.log('longitude:', lng);
 
         setLat(lat);
         setLng(lng);

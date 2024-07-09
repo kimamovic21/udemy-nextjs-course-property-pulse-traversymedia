@@ -9,8 +9,8 @@ import Spinner from "@/components/Spinner";
 
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
-  console.log(searchParams.get('location'));
-  console.log(searchParams.get('propertyType'));
+//   console.log(searchParams.get('location'));
+//   console.log(searchParams.get('propertyType'));
 
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,11 +22,11 @@ const SearchResultsPage = () => {
     const fetchSearchResults = async () => {
         try {
             const res = await fetch(`/api/properties/search/?location=${location}&propertyType=${propertyType}`);
+            // console.log('res:', res);
 
-            console.log('res:', res);
             if (res.status === 200) {
                 const data = await res.json();
-                console.log('data:', data);
+                // console.log('data:', data);
                 setProperties(data);
             } else {
                 setProperties([]);
@@ -41,7 +41,7 @@ const SearchResultsPage = () => {
     fetchSearchResults();
   }, [location, propertyType]);
 
-  console.log('properties:', properties);
+//   console.log('properties:', properties);
 
     return (
         <>
@@ -51,29 +51,35 @@ const SearchResultsPage = () => {
                 </div>
             </section>
             
-            <section className="px-4 py-6">
-                <div className="container-xl lg:container m-auto px-4 py-6">
-                    <Link href='/properties' className="flex items-center text-blue-500 hover:underline mb-3">
-                        <FaArrowAltCircleLeft className="mr-2 mb-1" /> 
-                            Back to properties
-                    </Link>
-                    <h2 className="text-2xl mb-4">Search Results</h2>
-                    {properties.length === 0 ? (
-                        <p>No search results found...</p>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {properties?.map((property) => (
-                                <PropertyCard 
-                                    key={property._id}
-                                    property={property}
-                                />
-                            ))}
-                        </div>  
-                    )}
-                </div>
-            </section>
+            {loading ? (
+                <Spinner />
+            ) : (
+                <section className="px-4 py-6">
+                    <div className="container-xl lg:container m-auto px-4 py-6">
+                        <Link href='/properties' className="flex items-center text-blue-500 hover:underline mb-3">
+                            <FaArrowAltCircleLeft className="mr-2 mb-1" /> 
+                                Back to properties
+                        </Link>
+
+                        <h2 className="text-2xl mb-4">Search Results</h2>
+
+                        {properties.length === 0 ? (
+                            <p>No search results found...</p>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {properties?.map((property) => (
+                                    <PropertyCard 
+                                        key={property._id}
+                                        property={property}
+                                    />
+                                ))}
+                            </div>  
+                        )}
+                    </div>
+                </section>
+            )}
         </>
-    )
+    );
 };
 
 export default SearchResultsPage;
