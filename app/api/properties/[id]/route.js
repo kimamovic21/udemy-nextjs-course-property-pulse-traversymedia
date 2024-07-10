@@ -1,6 +1,8 @@
+import { getSessionUser } from "@/utils/getSessionUser";
 import connectDB from "@/config/database";
 import Property from "@/models/Property";
-import { getSessionUser } from "@/utils/getSessionUser";
+
+export const dynamic = 'force-dynamic';
 
 // GET /api/properties/:id
 export const GET = async (request, { params }) => {
